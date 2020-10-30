@@ -1,4 +1,4 @@
-const fs = require('fs-promise');
+const fs = require('fs-extra');
 const path = require('path');
 const utils = require('../utils');
 const graph = require('../graph');
@@ -92,6 +92,42 @@ const generate = async function(projectRoot, type, name, options) {
             type: shaderFilename,
             options: {
               shader: name,
+            },
+          });
+        }, err => {
+          if (err) {
+            console.error(err);
+          } else {
+            console.log(`-> added ${shaderFilename} to graph.json`);
+          }
+        });
+      }
+      break;
+
+    case 'overlayNode':
+      {
+        const shaderFilename = name + 'Node';
+        generateNode(shaderFilename,
+          'TemplateOverlayNode.js',
+          [[/TemplateOverlayNode/g, shaderFilename]],
+          projectRoot);
+
+        await fs.copy(
+          path.join(__dirname, 'templateOverlayShader'),
+          path.join(projectRoot, 'src', 'shaders', name)
+        );
+        console.log(`-> added ${name} to src`);
+
+        graph.transform(projectRoot, graph => {
+          graph.push({
+            id: name,
+            type: shaderFilename,
+            options: {
+              shader: name,
+            },
+            connected: {
+              overlay: '',
+              background: '',
             },
           });
         }, err => {

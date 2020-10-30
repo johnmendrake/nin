@@ -1,8 +1,7 @@
 .PHONY: all
 all:
-	yarn start
+	npm start
 
-.PHONY: publish
-publish: all
-	npm version major
-	npm publish
+.PHONY: bump-version
+bump-version:
+	npm --no-git-tag-version version major

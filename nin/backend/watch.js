@@ -5,12 +5,14 @@ const shaderGen = require('./shadergen');
 
 
 function watch(projectPath, cb) {
-  let paths = [];
+  let paths = ['res/graph.json'];
+
+  /* sent only once, must come first */
+  cb('add', {path: 'res/graph.json'});
 
   const watcher = chokidar.watch(
     [ 'src/',
       'lib/',
-      'res/graph.json',
       'res/*.camera.json'],
     {
       ignored: [/[\/\\]\./, /\/shaders\//, /___jb_tmp___/, /___jb_old___/],
@@ -38,6 +40,10 @@ function watch(projectPath, cb) {
       return;
     }
 
+    if(path.endsWith('~')) {
+      return;
+    }
+
     if (logFileChanges) {
       console.log(chalk.yellow('Change in project detected: ') +
                   chalk.cyan(event) +
@@ -57,6 +63,7 @@ function watch(projectPath, cb) {
       }
     }
   });
+
 
   const shaderWatcher = chokidar.watch('src/shaders/', {
     ignored: /[\/\\]\./,
